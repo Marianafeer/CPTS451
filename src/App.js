@@ -2,6 +2,7 @@ import React from "react";
 import logo from "./database.svg";
 import "./App.css";
 import Template from "./components/Template";
+import BusinessSearch from "./components/BusinessSearch";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           Learn React
         </a> 
       </header> */}
+      <BusinessSearch />
     </div>
   );
 }
