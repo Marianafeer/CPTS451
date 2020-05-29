@@ -1,20 +1,26 @@
 import React,{Fragment, useEffect, useState} from 'react';
-import { makeStyles, rgbToHex, hexToRgb } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
 import { FixedSizeList } from "react-window";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableRow from '@material-ui/core/TableRow';
+import { MenuItem } from '@material-ui/core';
+
+
 
 const ListCities = () => {
-
 const [cities, setCities] = useState([]);
-const [city, setCity] = React.useState([]);
 
 //handle change state
 const handleChange = (event) => {
-    setCity(event.target.value);
+    setCities(event.target.value);
   };
 
 
@@ -50,26 +56,27 @@ const handleChange = (event) => {
           </ListItem>
         );
       }
+    
 
     return (
-        <Fragment>
-            {" "}
-            <table class="table mt-5 text-center">
-                <thead>
-                    <tr>
-                         <th>City </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {cities.map(business => (
-                        <tr>
-                            <td>{business.city}</td>
-                        </tr> 
-                    ))}
+           <Paper className="selectCity">
+                     {" "}
+                 <table class="table mt-5 text-center">
+                        <thead>
+                             <tr>
+                                 <th>City </th>
+                             </tr>
+                        </thead>
+                    <tbody>
+                        {cities.map(business => (
+                                <MenuItem>
+                                    <td>{business.city}</td>
+                                 </MenuItem> 
+                            ))}
       
-                </tbody>
-            </table>
-        </Fragment>
+                        </tbody>
+                    </table>
+            </Paper>
     )
 };
 

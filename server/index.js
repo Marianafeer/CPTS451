@@ -22,6 +22,7 @@ app.get("/businesses", async(req, res) => {
     }
 });
 
+
 //get one business
 app.get("/businesses/:id", async (req, res) => {
     try {
@@ -35,26 +36,38 @@ app.get("/businesses/:id", async (req, res) => {
 })
 
 //get business states
-app.get("/states", async (req, res) => {
+app.get("/states", async(req, res) => {
     try {
-        const allBusiness = await pool.query("SELECT DISTINT state FROM business ORDER BY state" );
-        res.json(allBusiness.rows);
+        const allStates = await pool.query("SELECT DISTINCT state FROM business ORDER BY state" );
+        res.json(allStates.rows);
         
     } catch (err) {
         console.error(err.message)
     }
-})
+});
+
+
 //get business cities
 app.get("/cities", async (req, res) => {
     try {
-        const allBusiness = await pool.query("SELECT city FROM business" );
-        res.json(allBusiness.rows);
+        const allCities = await pool.query("SELECT DISTINCT city FROM business" );
+        res.json(allCities.rows);
         
     } catch (err) {
         console.error(err.message)
     }
 })
 
+//get a Distint state
+app.get("/businesses/:id", async (req, res) => {
+    try {
+        const {id} = req.params;
+        const {state} = req.body;
+        const getState = await pool.query("SELECT DISTINCT state FROM business ORDER BY state");
+    } catch (err) {
+        console.error(err.message);
+    }
+})
 
 
 app.listen(PORT, () => {

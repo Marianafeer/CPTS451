@@ -10,7 +10,7 @@ const [state, setState] = React.useState([]);
 
 //handle change state
 const handleChange = (event) => {
-    setState(event.target.value);
+    setStates(event.target.value);
   };
 
 const SelectStateStyle = makeStyles((theme) => ({
@@ -22,7 +22,7 @@ const SelectStateStyle = makeStyles((theme) => ({
     },
   }));
 
-    const getState = async state => {
+    const getStates = async () => {
         try {
             const response = await fetch(`http://localhost:5000/states`);
             //get data back but first parse
@@ -38,12 +38,17 @@ const SelectStateStyle = makeStyles((theme) => ({
     };
 
     useEffect(() => {
-        getState();
+        getStates();
     } ,[]);
 
     console.log(states)
 
     const StateStyle = SelectStateStyle();
+
+    const onClickHandler = event => {
+      const value = event.target.innerHTML;
+      this.setState({ value })
+    }
 
     return (
         <div className="selectState">
@@ -54,7 +59,6 @@ const SelectStateStyle = makeStyles((theme) => ({
               select
               label="State"
               onChange={handleChange}
-              //   helperText="Please select the state"
             >
                 {states.map(business => (
                         <MenuItem>

@@ -10,8 +10,10 @@ import ListCities from "./components/ListCities"
 function App() {
   return (
     <div className="App">
-      <ListBusiness />
-      <Template />
+    
+      
+      < Template />
+
       {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         {/* <p>
@@ -25,11 +27,19 @@ function App() {
         >
           Learn React
         </a> 
-      </header> */}
-      <ListState />
-      <br></br>
+      </header> 
       <ListCities />
+      */
+      
+      }
+      <ListState />
+
+      <ListCities />
+      <br></br>
+      
       <BusinessSearch />
+
+      <ListBusiness />
     </div>
   );
 }
