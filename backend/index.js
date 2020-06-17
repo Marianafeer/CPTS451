@@ -43,19 +43,20 @@ app.get('/state', db.getAllStates)
 app.get('/state/:state', db.getState)
 app.get('/city/:state', db.getCitiesInState)
 app.get('/zipcode/:city', db.getZipcodeInCity)
+app.get('/category/:zipcode', db.getCategoriesInZipcode)
 
-app.get('/category', db.getAllCategories)
-//app.get('/category/:category', db.getCategory)
-//app.get('/category/:zipcode', db.getCategoriesInZipcode)
-//app.get('/getCategories', db.getBusinessesInCategory)
+//app.get('/category', db.getAllCategories)
 
+
+//app.get("/getcategories/", db.getCategories)
 
 app.get('/businesses/', db.getAllBusinesses)
-app.get('/businesses/:city', db.getBusinessesInZipcode)
+//app.get('/businesses/:category', db.getBusinessesInCategory)
+
+app.get('/businesses/:category', db.getBusinessesInCategory)
+
 app.get('/businesses/:city/:name', db.getBusinessInfo)
 app.get('/count/state/:state', db.getBusinessSC)
 app.get('/count/city/:city', db.getBusinessCC)
 app.get('/count/zipcode/:zipcode', db.getBusinessZCC)
-
 app.get('/count/category/:category', db.getBusinessCAC)
-

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Template from './Template';
+import { Multiselect } from 'multiselect-react-dropdown';
 
 
 // these were from the Create React App script
@@ -13,6 +14,7 @@ import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import FormCheck from 'react-bootstrap/FormCheck';
 
 class App extends React.Component {
   constructor(props) {
@@ -26,7 +28,6 @@ class App extends React.Component {
     this.cName = React.createRef();
     this.sName = React.createRef();
     this.zcName = React.createRef();
-    
     this.sCount = React.createRef();
     this.cCount = React.createRef();
     this.zcCount = React.createRef();
@@ -38,61 +39,24 @@ class App extends React.Component {
   showModal = () => this.setState({ modalIsOpen: true });
   hideModal = () => this.setState({ modalIsOpen: false });
 
-
-
-  componentDidMount() {
-    fetch("http://localhost:3030/category")
-    .then((response) => {
-      return response.json();
-    })
-    .then(data => {
-      let categoriesFromApi = data.map(category => {
-        return { value: category.category, display: category.category }
-      });
-      this.setState({
-        categories: [{ value: '', display: 'Select A Category' }].concat(categoriesFromApi),
-        businesses: []
-      });
-    }).catch(error => {
-      console.log(error);
-    });
-
-    fetch("http://localhost:3030/state")
-      .then((response) => {
-        return response.json();
-      })
-      .then(data => {
-        let statesFromApi = data.map(state => {
-          return { value: state.state, display: state.state }
-        });
-        this.setState({
-          states: [{ value: '', display: 'Select A State' }].concat(statesFromApi),
-          businesses: []
-        });
-      }).catch(error => {
-        console.log(error);
-      });   
-  }
-/*
-  componentDidMount() {
-    fetch("http://localhost:3030/state")
-      .then((response) => {
-        return response.json();
-      })
-      .then(data => {
-        let statesFromApi = data.map(state => {
-          return { value: state.state, display: state.state }
-        });
-        this.setState({
-          states: [{ value: '', display: 'Select A State' }].concat(statesFromApi),
-          businesses: []
-        });
-      }).catch(error => {
-        console.log(error);
-      });
-  }*/
-
   
+  componentDidMount() {
+    fetch("http://localhost:3030/state")
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let statesFromApi = data.map(state => {
+          return { value: state.state, display: state.state }
+        });
+        this.setState({
+          states: [{ value: '', display: 'Select A State' }].concat(statesFromApi),
+          businesses: []
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+  }
 
   updateCities = (e) => {
     this.setState({ selectedState: e.target.value })
@@ -135,10 +99,9 @@ class App extends React.Component {
       });
   }
 
-  //getting categories
- getCategories = (e) => {
-  this.setState({ selectedZipCode: e.target.value })
-    fetch("http://localhost:3030/category")
+  updateCategory = (e) => {
+    this.setState({ selectedZipCode: e.target.value })
+    fetch("http://localhost:3030/category/" + e.target.value)
       .then((response) => {
         return response.json();
       })
@@ -148,7 +111,7 @@ class App extends React.Component {
         });
         this.setState({
           categories: [{ value: '', display: 'Select A Category' }].concat(categoriesFromApi),
-          businesses: []
+          businesses: [],
         });
       }).catch(error => {
         console.log(error);
@@ -157,7 +120,7 @@ class App extends React.Component {
 
   //getting the businesses 
   updateTable = (e) => {
-    this.setState({ selectedZipCode: e.target.value })
+    this.setState({ selectedCategory: e.target.value })
     fetch("http://localhost:3030/businesses/" + e.target.value)
       .then((response) => {
         return response.json();
@@ -173,6 +136,7 @@ class App extends React.Component {
         console.log(error);
       });
   }
+
 
   fetchStateCount = () => {
     fetch("http://localhost:3030/count/state/" + this.state.selectedState)
@@ -224,7 +188,7 @@ class App extends React.Component {
     .then(data => {
       this.setState ({
         cacCount: data[0].count
-      });
+      })
     }).catch(error => {
       console.log(error)
     })
@@ -244,49 +208,50 @@ class App extends React.Component {
       <div className="App">   
         <div className="body">
         <Template />
-        <div className= "selectState" >
-          <Form>
-          <Form.Group controlId="exampleForm.ControlSelect3">
-              <div classname= "API">
-              <Form.Label>Categories</Form.Label>
-              <Form.Control as="select" value={this.state.selectedCategory} onChange={this.updateState}>
-                {this.state.categories.map((category) => <option key={category.value} value={category.value}> {category.display} </option>)}
-              </Form.Control>
-              </div>
-            </Form.Group>   
-          </Form>
-        </div>
-        <div>
-            OR
-          </div>
+        
         <div className= "selectState">        
           <Form>
+            
+            <Form>
             <Form.Group controlId="exampleForm.ControlSelect1">
-              <div classname= "API">
+              <div classname= "showStates">
               <Form.Label>State</Form.Label>
               <Form.Control as="select" value={this.state.selectedState} onChange={this.updateCities}>
                 {this.state.states.map((state) => <option key={state.value} value={state.value}>{state.display}</option>)}
               </Form.Control>
               </div>
             </Form.Group>
+            </Form>
 
+            <Form>
             <Form.Group controlId="exampleForm.ControlSelect2">
               <Form.Label>City</Form.Label>
               <Form.Control as="select" value={this.state.selectedCity} onChange={this.updateZipcode}>
                 {this.state.cities.map((city) => <option key={city.value} value={city.value}>{city.display}</option>)}
               </Form.Control>
             </Form.Group>
+            </Form>
 
+            <Form>
             <Form.Group controlId="exampleForm.ControlSelect3">
               <Form.Label>ZipCode</Form.Label>
-              <Form.Control as="select" value={this.state.selectedZipCode} onChange={this.updateTable}>
-                {this.state.zipcodes.map((zipcode) => <option key={zipcode.value} value={zipcode.value}> {zipcode.display} </option>)}
+              <Form.Control as="select" value={this.state.selectedZipCode} onChange={this.updateCategory}>
+                {this.state.zipcodes.map((zipcode) => <option key={zipcode.value} value={zipcode.value}> {zipcode.display } </option>)}
               </Form.Control>
-            </Form.Group>   
-          </Form>
-        </div>
+            </Form.Group>
+            </Form>
 
-    
+
+            <Form.Group controlId="exampleForm.ControlSelect4">
+              <Form.Label>Category</Form.Label>
+              <Form.Control as="select" value={this.state.selectedCategory} onChange={this.updateTable}>
+                {this.state.categories.map((category) => <option key={category.value} value={category.value}> {category.display } </option>)}
+              </Form.Control>
+            </Form.Group>
+          </Form>
+
+          
+        </div>
 
         <div className="Table">
         <Table striped bordered hover id="dataTable">
@@ -296,6 +261,7 @@ class App extends React.Component {
               <th>State</th>
               <th>City</th>
               <th>zipcode</th>
+              <th>Category</th>
             </tr>
           </thead>
           <tbody>
@@ -304,12 +270,13 @@ class App extends React.Component {
               <td>{this.state.selectedState}</td>
               <td>{this.state.selectedCity}</td>
               <td>{this.state.selectedZipCode}</td>
+              <td>{this.state.selectedCategory}</td>
             </tr>)}
           </tbody>
         </Table>
         </div>
-
         </div>
+
 
         <div className= "BusinessModal"> 
         <Modal show={this.state.modalIsOpen} onHide={this.hideModal}>
@@ -322,14 +289,18 @@ class App extends React.Component {
               <div id="zcName">ZipCode: {this.state.selectedZipCode}</div>
               <div id="cName">City: {this.state.selectedCity}</div>
               <div id="sName">State: {this.state.selectedState}</div>
+              <div id="sName">State: {this.state.selectedCategory}</div>
+              {/* 
               <div id="cCount">Businesses in City: {this.state.cCount}</div>
               <div id="sCount">Businesses in State: {this.state.sCount}</div>
+              */}
+
             </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={this.hideModal}>
               Close
-            </Button>
+                        </Button>
             <Button variant="primary" onClick={this.hideModal}>
               Save Changes
                         </Button>
