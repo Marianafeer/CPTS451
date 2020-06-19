@@ -176,6 +176,35 @@ const getBusinessCAC = (request, response) => {
     });
 }
 
+
+const getBusinessesfromCategories = (request, response) => {
+            const categoryURL = request.params.categories;
+            const categories = categoryURL.split(' ');
+            const zipcode = request.params.zipcode;
+            console.log("categories =" +  categories);
+            let sqlQuery = 'SELECT * FROM business,(';
+
+            for (i = 0; i < categories.length; i++) {
+                            if (i > 0){
+                                                sqlQuery += ' INTERSECT ';
+                                            }       
+                            sqlQuery += 'SELECT categoryid FROM category WHERE category=' + "'" + categories[i] + "'";
+                        }
+            sqlQuery += ') as businessCategories WHERE categoryid=businessid';
+            if (zipcode){
+                            sqlQuery += " AND zipcode=" + zipcode;
+                        }
+            sqlQuery += ';';
+            console.log(sqlQuery);
+            pool.query(sqlQuery, (error, results) => {
+                            if (error) {
+                                                throw error
+                                            }
+                            response.status(200).json(results.rows)
+                        });
+}
+
+
 module.exports = {
     getState,
     getAllStates,
@@ -194,4 +223,5 @@ module.exports = {
     getBusinessCC,
     getBusinessZCC,
     getBusinessCAC,
+    getBusinessesfromCategories, 
 }
