@@ -205,7 +205,58 @@ const getBusinessesfromCategories = (request, response) => {
 }
 
 
+//USER INFORMATION
+const getAllNames = (request, response) => {
+    pool.query('SELECT DISTINCT name FROM usertable ORDER BY name', (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    })
+}
+
+const getName = (request, response) => {
+    const name = request.params.name;
+    pool.query('SELECT DISTINCT name FROM usertable WHERE name = $1 ', [name], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+const getIDFromName = (request, response) => {
+    const name = request.params.name;
+    pool.query('SELECT DISTINCT userid FROM usertable WHERE name = $1 ORDER BY userid', [name], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+const getAllUserInfo = (request, response) => {
+    pool.query('SELECT * FROM usetable ORDER BY name', (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    })
+}
+const getUserinfoInID = (request, response) => {
+    const userid = request.params.userid;
+    pool.query('SELECT * FROM usertable WHERE userid = $1 ORDER BY name', [userid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+
 module.exports = {
+
     getState,
     getAllStates,
     getCitiesInState,
@@ -224,4 +275,12 @@ module.exports = {
     getBusinessZCC,
     getBusinessCAC,
     getBusinessesfromCategories, 
+
+
+    //USER INFORMATION
+    getName,
+    getAllNames,
+    getIDFromName,
+    getAllUserInfo,
+    getUserinfoInID,
 }

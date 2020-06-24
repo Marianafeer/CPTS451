@@ -36,10 +36,15 @@ nav {
 
 .nav-links {
   justify-content: space-around;
+
 }
 
 .nav-link {
   color: #5f5f79;
   font-size: 18px;
   text-decoration: none;
+}
+
+.userButton {
+  color: red;
 }

@@ -8,7 +8,14 @@ function Template() {
       <div className="logo-container">
         <img className="logoImg" src={logo} alt="logo" />
         <h2 className="logo">PERN</h2>
+
+
+        <div>
+        holo
+        </div>
+
       </div>
+    
 
       {/*}
       <nav>
@@ -24,6 +31,7 @@ function Template() {
         </div>
       </nav>*/}
     </header>
+
   );
 }
 

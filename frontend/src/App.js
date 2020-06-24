@@ -1,7 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Template from './Template';
-import { Multiselect } from 'multiselect-react-dropdown';
+import MultiSelect from "react-multi-select-component";
+import Paper from '@material-ui/core/Paper';
+
+//header menu
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 
 // these were from the Create React App script
@@ -20,8 +25,10 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      modalIsOpen: false, modalStateIGuess: "", states: [], cities: [], zipcodes: [], categories: [], businesses: [],
-      selectedState: "", selectedCity: "", selectedZipCode: "", selectedCategory: "", selectedBusiness: "", sCount: "", cCount: "", zcCount: "", cacCount: ""
+      modalIsOpen: false, modalStateIGuess: "", states: [], cities: [], zipcodes: [], categories: [], businesses: [], names: [], userids: [], userinfo: [],
+      selectedState: "", selectedCity: "", selectedZipCode: "", selectedCategory: "", selectedBusiness: "", selectedUserid: "",  sCount: "", cCount: "", zcCount: "", cacCount: "",
+      //user info
+      selectedName: ""
     };
 
     this.bName = React.createRef();
@@ -32,6 +39,10 @@ class App extends React.Component {
     this.cCount = React.createRef();
     this.zcCount = React.createRef();
     this.cacCount = React.createRef();
+
+    //user info
+    this.nName = React.createRef();
+    this.uName = React.createRef();
 
 
   }
@@ -53,9 +64,29 @@ class App extends React.Component {
           states: [{ value: '', display: 'Select A State' }].concat(statesFromApi),
           businesses: []
         });
+
+
       }).catch(error => {
         console.log(error);
       });
+
+
+      fetch("http://localhost:3030/name")
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let namesFromApi = data.map(name => {
+          return { value: name.name, display: name.name }
+        });
+        this.setState({
+          names: [{ value: '', display: 'Select Name' }].concat(namesFromApi)
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+
+
   }
 
   updateCities = (e) => {
@@ -137,6 +168,43 @@ class App extends React.Component {
       });
   }
 
+  //user info
+  updateUserid = (e) => {
+    this.setState({ selectedName: e.target.value })
+    fetch("http://localhost:3030/userid/" + e.target.value)
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let useridFromApi = data.map(userid => {
+          return { value: userid.userid, display: userid.userid }
+        });
+        this.setState({
+          userids: [{ value: '', display: 'Select Your userID' }].concat(useridFromApi),
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+  }
+
+  updateUserInfo = (e) => {
+    this.setState({ selectedUserid: e.target.value })
+    fetch("http://localhost:3030/userinfo/" + e.target.value)
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let usertableFromApi = data.map(usertable => {
+          return { value: usertable.name }
+        });
+        this.setState({
+          userinfo: usertableFromApi
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+  }
+
 
   fetchStateCount = () => {
     fetch("http://localhost:3030/count/state/" + this.state.selectedState)
@@ -205,13 +273,24 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className="App">   
+      <div className="App">  
+        <header>
+          <div className="logo-container">
+          <img className="logoImg" src={logo} alt="logo" />
+          <h2 className="logo">PERN</h2>
+          </div>
+        </header> 
+
+       
+       <br></br>
+       <br></br>
+
+
+      <div className= "Right">
         <div className="body">
-        <Template />
-        
         <div className= "selectState">        
           <Form>
-            
+          <Form.Label>Business Search</Form.Label>
             <Form>
             <Form.Group controlId="exampleForm.ControlSelect1">
               <div classname= "showStates">
@@ -248,9 +327,18 @@ class App extends React.Component {
                 {this.state.categories.map((category) => <option key={category.value} value={category.value}> {category.display } </option>)}
               </Form.Control>
             </Form.Group>
-          </Form>
 
-          
+            <div calss = "container">
+              <form action="#">
+              <div class = "form-group">
+                <label> PICK </label>
+                  <select multiple={true} class="form-control" value={this.state.selectedCategory} >
+                  {this.state.categories.map((category) => <option key={category.value} value={category.value}> {category.display } </option>)}
+                  </select>
+              </div>
+              </form>
+            </div>
+          </Form>
         </div>
 
         <div className="Table">
@@ -275,6 +363,7 @@ class App extends React.Component {
           </tbody>
         </Table>
         </div>
+
         </div>
 
 
@@ -290,11 +379,8 @@ class App extends React.Component {
               <div id="cName">City: {this.state.selectedCity}</div>
               <div id="sName">State: {this.state.selectedState}</div>
               <div id="sName">State: {this.state.selectedCategory}</div>
-              {/* 
               <div id="cCount">Businesses in City: {this.state.cCount}</div>
               <div id="sCount">Businesses in State: {this.state.sCount}</div>
-              */}
-
             </div>
           </Modal.Body>
           <Modal.Footer>
@@ -302,12 +388,62 @@ class App extends React.Component {
               Close
                         </Button>
             <Button variant="primary" onClick={this.hideModal}>
-              Save Changes
+              Mark as Favorite
                         </Button>
           </Modal.Footer>
         </Modal>
         </div>
+
+
+        </div>
+
+        <div className ="Left">
+          <div className = "selectUser">
+          <Form>
+            <Form.Label>User Information</Form.Label>
+            <Form>
+            <Form.Group controlId="exampleForm.ControlSelect1">
+              <div classname= "showStates">
+              <Form.Label>Name</Form.Label>
+              <Form.Control as="select" value={this.state.selectedName} onChange={this.updateUserid}>
+                {this.state.names.map((name) => <option key={name.value} value={name.value}>{name.display}</option>)}
+              </Form.Control>
+              </div>
+            </Form.Group>
+            </Form>
+
+            <Form>
+            <Form.Group controlId="exampleForm.ControlSelect2">
+              <Form.Label>UserID</Form.Label>
+              <Form.Control as="select" value={this.state.selectedUserid} onChange={this.updateUserInfo}>
+                {this.state.userids.map((userid) => <option key={userid.value} value={userid.value}>{userid.display}</option>)}
+              </Form.Control>
+            </Form.Group>
+            </Form>
+          
+          </Form>
+          </div>
+
+          <div className= "showInfo">
+          <Form>
+            <div className="modalBody">
+              <div id="nName">Name: {this.state.selectedName}</div>
+              <div id="uName">UserID: {this.state.selectedUserid}</div>
+              <div>Average Stars: </div>
+              <div>Date Joined: </div>
+              <div>Average Stars: </div>
+              <div>Number of Fans: </div>
+              <div>Count of Votes: </div>
+              <div>Location: </div>
+            </div>
+          </Form>  
+          </div>
+
+        </div>
+
       </div>
+
+
     );
   }
 }

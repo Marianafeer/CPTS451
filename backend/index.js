@@ -61,3 +61,11 @@ app.get('/count/city/:city', db.getBusinessCC)
 app.get('/count/zipcode/:zipcode', db.getBusinessZCC)
 app.get('/count/category/:category', db.getBusinessCAC)
 app.get('/business/:zipcode/:categories', db.getBusinessesfromCategories)
+
+//user Information
+app.get('/name', db.getAllNames)
+app.get('/name/:name', db.getName)
+app.get('/userid/:name', db.getIDFromName)
+app.get('/userinfo/:userid', db.getUserinfoInID)
+
+

@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  margin: 0;
 }
 
 .App-logo {
@@ -48,16 +49,6 @@ box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .Table {
-width: 900px;
-margin: 10px;
-border-radius: 12px;
-padding: 10px;
-text-align: center;
-/* background-color: burlywood; */
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-}
-
-.selectState {
   width: 700px;
   margin: 10px;
   border-radius: 12px;
@@ -65,11 +56,77 @@ box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   text-align: center;
   /* background-color: burlywood; */
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.selectState {
+  width: 600px;
+  margin: 10px;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  /* background-color: burlywood; */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   }
+
+.selectUser {
+  width: 350px;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  /* background-color: burlywood; */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.showInfo {
+  margin-top: 50px;
+  width: 350px;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: left;
+  /* background-color: burlywood; */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
 .body {
   display: flex;
   flex-direction: column;
   align-items: center;
   /* background-color: darkslateblue; */
   justify-content: space-evenly;
+}
+
+.logo-container {
+  flex: 1;
+  align-items: left;
+}
+
+nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: right;
+  flex: 0 0 20%;
+}
+
+.nav-links {
+  justify-content: space-around;
+
+}
+
+.nav-link {
+  color: #5f5f79;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.Right{
+  width: 700px;
+  float: left;
+  overflow: hidden;
+  margin-right: 120px;
+}
+
+.Left {
+  width: 400px;
+  float: left;
+  overflow: hidden;
 }
