@@ -8,6 +8,10 @@ import Paper from '@material-ui/core/Paper';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
+//tabs
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+
 
 // these were from the Create React App script
 import logo from './logo.svg';
@@ -281,20 +285,24 @@ class App extends React.Component {
           </div>
         </header> 
 
-       
-       <br></br>
-       <br></br>
 
+      <Tabs>
+        <TabList>
+          <Tab> Business Search </Tab>
+          <Tab>User Information </Tab>
+        </TabList>
 
-      <div className= "Right">
+        {/*Business Search Tab */}
+        <TabPanel>
         <div className="body">
+          
         <div className= "selectState">        
           <Form>
           <Form.Label>Business Search</Form.Label>
             <Form>
             <Form.Group controlId="exampleForm.ControlSelect1">
               <div classname= "showStates">
-              <Form.Label>State</Form.Label>
+              <Form.Label >State</Form.Label>
               <Form.Control as="select" value={this.state.selectedState} onChange={this.updateCities}>
                 {this.state.states.map((state) => <option key={state.value} value={state.value}>{state.display}</option>)}
               </Form.Control>
@@ -386,21 +394,29 @@ class App extends React.Component {
           <Modal.Footer>
             <Button variant="secondary" onClick={this.hideModal}>
               Close
-                        </Button>
-            <Button variant="primary" onClick={this.hideModal}>
+            </Button>
+            <Button variant= "primary">
               Mark as Favorite
-                        </Button>
+            </Button>
           </Modal.Footer>
         </Modal>
         </div>
+        </TabPanel>
 
 
-        </div>
-
-        <div className ="Left">
-          <div className = "selectUser">
+        {/*User Information Tab */}
+        <TabPanel>
+        <div className="body">
+        <div className = "selectUser">
           <Form>
+
             <Form.Label>User Information</Form.Label>
+            <Form>
+              <Form.Control type ="input" placeholder="Enter your Name" >
+
+              </Form.Control>
+            </Form>
+
             <Form>
             <Form.Group controlId="exampleForm.ControlSelect1">
               <div classname= "showStates">
@@ -408,6 +424,7 @@ class App extends React.Component {
               <Form.Control as="select" value={this.state.selectedName} onChange={this.updateUserid}>
                 {this.state.names.map((name) => <option key={name.value} value={name.value}>{name.display}</option>)}
               </Form.Control>
+              
               </div>
             </Form.Group>
             </Form>
@@ -438,9 +455,11 @@ class App extends React.Component {
             </div>
           </Form>  
           </div>
-
         </div>
+        </TabPanel>
 
+
+      </Tabs>
       </div>
 
 
