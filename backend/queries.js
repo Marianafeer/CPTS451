@@ -85,7 +85,7 @@ const getBusinessesInCategory = (request, response) => {
     });
 }*/
 
-const getBusinessInfo = (request, response) => {
+let getBusinessInfo = (request, response) => {
     const name = request.params.name;
     const category = request.params.category;
     pool.query('SELECT DISTINCT * FROM business JOIN ON businessid = categoryid WHERE name = $1 AND category = $2 ORDER BY name', [name, category], (error, results) => {
@@ -249,6 +249,18 @@ const getFriendTips = (request, response) => {
     });
 }
 
+getBusinessInfo = (request, response) => {
+    const businessid = request.params.businessID;
+    console.log(businessid);
+    pool.query('select * from business where businessid=$1 order by name;', [businessid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+ 
+
 
 module.exports = {
 
@@ -282,4 +294,5 @@ module.exports = {
     getFavoriteBusinesses,
     getUserFriends,
     getFriendTips,
+    getBusinessInfo
 }
