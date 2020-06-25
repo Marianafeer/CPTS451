@@ -288,6 +288,21 @@ const getBusinessReviews = (request, response) => {
 }
 
 
+const postAddCheckin = (request, response) => {
+    const businessID = request.body.businessID;
+    const today = new Date();
+    const dayMapping = {0: "Sunday", 1: "Monday", 2: "Tuesday", 3:"Wednesday", 4:"Thursday", 5:"Friday", 6:"Saturday"};
+    const day = dayMapping[today.getDay()];
+    const checkintime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    pool.query('insert into checkin values ($1, $2, 1, $3)', [day, checkintime, businessID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
 module.exports = {
 
     getState,
@@ -323,4 +338,5 @@ module.exports = {
     getBusinessInfo,
     getBusinessInfoOrder,
     getBusinessReviews,
+    postAddCheckin,
 }
