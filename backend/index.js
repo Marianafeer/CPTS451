@@ -71,7 +71,7 @@ app.get('/userinfo/:userid', db.getUserinfoInID)
 
 app.get('/userinfo/', db.getAllUserInfo)
 app.get('/favoriteBusinesses/:userID', db.getFavoriteBusinesses)
-
+app.get('/friends/:userID', db.getUserFriends)
 
 
 

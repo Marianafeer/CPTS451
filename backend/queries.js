@@ -228,6 +228,17 @@ const getFavoriteBusinesses = (request, response) => {
 }
 
 
+const getUserFriends = (request, response) => {
+    const userid = request.params.userID;
+    pool.query('SELECT * from friend, usertable where usertable.userid = friend.friendid and friend.personid = $1', [userid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
 module.exports = {
 
     getState,
@@ -257,4 +268,6 @@ module.exports = {
     getUserinfoInID,
     getAllUserInfo,
     // Favorite Business Info
-    getFavoriteBusinesses,}
+    getFavoriteBusinesses,
+    getUserFriends,
+}
