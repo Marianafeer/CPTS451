@@ -162,7 +162,7 @@ class App extends React.Component {
       })
       .then(data => {
         let businessFromApi = data.map(business => {
-          return { value: business.name }
+          return { value: business.name}
         });
         this.setState({
           businesses: businessFromApi
@@ -198,11 +198,11 @@ class App extends React.Component {
         return response.json();
       })
       .then(data => {
-        let usertableFromApi = data.map(usertable => {
-          return { value: usertable.name }
+        let numFansFromApi = data.map(usertable => {
+          return {name: usertable.name, fans: usertable.nfans, avgstars: usertable.avgstars, datejoined: usertable.datejoined }
         });
         this.setState({
-          userinfo: usertableFromApi
+          userinfo: numFansFromApi
         });
       }).catch(error => {
         console.log(error);
@@ -439,23 +439,43 @@ class App extends React.Component {
             </Form>
           
           </Form>
-          </div>
-
-          <div className= "showInfo">
-          <Form>
-            <div className="modalBody">
-              <div id="nName">Name: {this.state.selectedName}</div>
-              <div id="uName">UserID: {this.state.selectedUserid}</div>
-              <div>Average Stars: </div>
-              <div>Date Joined: </div>
-              <div>Average Stars: </div>
-              <div>Number of Fans: </div>
-              <div>Count of Votes: </div>
-              <div>Location: </div>
-            </div>
-          </Form>  
-          </div>
         </div>
+
+        <div className="UserTable">
+          <Table striped bordered hover id="dataTable">
+            <tbody>
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Name:</th>
+                <td>{usertable.name}</td>
+              </tr>)}
+
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Number Fans:</th>
+                <td>{usertable.fans}</td>
+              </tr>)}
+
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Average Stars:</th>
+                <td>{usertable.avgstars}</td>
+              </tr>)}
+
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Date Joined:</th>
+                <td>{usertable.datejoined}</td>
+              </tr>)}
+
+            </tbody>
+            </Table>
+        </div>
+
+
+        </div>
+
+
         </TabPanel>
 
 

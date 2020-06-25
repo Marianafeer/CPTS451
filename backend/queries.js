@@ -55,44 +55,6 @@ const getCategoriesInZipcode = (request, response) => {
     });
 }
 
-/*
-const getAllCategories = (request, response) => {
-    pool.query('SELECT DISTINCT category FROM category ORDER BY category', (error, results) => {
-        if (error) {
-            throw error
-        }
-        response.status(200).json(results.rows)
-    })
-}
-*/
-
-/*
-const getCategory = (request, response) => {
-    const category = request.params.state;
-    pool.query('SELECT DISTINCT category FROM business NATURAL JOIN category WHERE category = $1 ', [category], (error, results) => {
-        if (error) {
-            throw error
-        }
-        response.status(200).json(results.rows)
-    });
-}*/
-
-/*
-const getCategories = (request, response) => {
-    const state = request.params.city;
-    const city = request.params.city;
-    const zipcode = request.params.city;
-    pool.query( 'SELECT DISTINCT category FROM business NATURAL JOIN category WHERE state = $1 AND city = $2 AND zipcode = $3 ORDER BY category', [state, city, zipcode],
-		(error, results) => {
-			if (error) {
-				throw error;
-			}
-			console.log(results);
-			response.status(200).json(results.rows);
-		}
-	);
-};*/
-
 const getAllBusinesses = (request, response) => {
     pool.query('SELECT * FROM business ORDER BY name', (error, results) => {
         if (error) {
@@ -235,14 +197,6 @@ const getIDFromName = (request, response) => {
     });
 }
 
-const getAllUserInfo = (request, response) => {
-    pool.query('SELECT * FROM usetable ORDER BY name', (error, results) => {
-        if (error) {
-            throw error
-        }
-        response.status(200).json(results.rows)
-    })
-}
 const getUserinfoInID = (request, response) => {
     const userid = request.params.userid;
     pool.query('SELECT * FROM usertable WHERE userid = $1 ORDER BY name', [userid], (error, results) => {
@@ -251,6 +205,15 @@ const getUserinfoInID = (request, response) => {
         }
         response.status(200).json(results.rows)
     });
+}
+
+const getAllUserInfo = (request, response) => {
+    pool.query('SELECT * FROM usertable ORDER BY name', (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    })
 }
 
 
@@ -281,6 +244,6 @@ module.exports = {
     getName,
     getAllNames,
     getIDFromName,
-    getAllUserInfo,
     getUserinfoInID,
+    getAllUserInfo,
 }
