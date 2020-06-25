@@ -286,9 +286,9 @@ class App extends React.Component {
         </header> 
 
 
-      <Tabs>
+      <Tabs style={{ float: "none", textAlign: "left", marginTop: "20px" }}>
         <TabList>
-          <Tab> Business Search </Tab>
+          <Tab > Business Search </Tab>
           <Tab>User Information </Tab>
         </TabList>
 
