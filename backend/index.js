@@ -70,7 +70,7 @@ app.get('/userid/:name', db.getIDFromName)
 app.get('/userinfo/:userid', db.getUserinfoInID)
 
 app.get('/userinfo/', db.getAllUserInfo)
-
+app.get('/favoriteBusinesses/:userID', db.getFavoriteBusinesses)
 
 
 

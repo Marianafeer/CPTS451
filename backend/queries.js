@@ -216,6 +216,16 @@ const getAllUserInfo = (request, response) => {
     })
 }
 
+// get FavoriteBusinessInfo using userid 
+const getFavoriteBusinesses = (request, response) => {
+    const userid = request.params.userID;
+    pool.query('SELECT * FROM favorite, business WHERE favorite.userid = $1 and favorite.businessid = business.businessid', [userid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
 
 
 module.exports = {
@@ -246,4 +256,5 @@ module.exports = {
     getIDFromName,
     getUserinfoInID,
     getAllUserInfo,
-}
+    // Favorite Business Info
+    getFavoriteBusinesses,}
