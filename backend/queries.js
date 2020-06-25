@@ -303,6 +303,63 @@ const postAddCheckin = (request, response) => {
 }
 
 
+const postAddReview = (request, response) => {
+    const businessID = request.body.businessID;
+    const userID = request.body.userID;
+    const reviewID = Date.now();
+    const stars = request.body.stars;
+    const reviewtext = request.body.reviewtext;
+    const cool = request.body.cool;
+    const useful = request.body.useful;
+    const funny = request.body.funny;
+    const today = new Date();
+    const datereviewed = today.getFullYear() + "-" + today.getMonth() + "-" + today.getDate();
+    let sqlQuery = "insert into review(businessid, userid, reviewid, stars, textreview, datereviewed, cool, useful, funny) values ('"+ businessID + "', '" + userID + "', '" + reviewID + "', ";
+    if (stars){
+        sqlQuery += stars + ", ";
+    }
+    else {
+        sqlQuery += 0 + ", ";
+    }
+    if (reviewtext){
+        sqlQuery += "'" +  reviewtext + "', ";    
+    }
+    else {
+        sqlQuery += "'-' , ";
+    }
+
+    sqlQuery += "'" + datereviewed + "', ";
+
+    if (cool){
+        sqlQuery += cool + ", ";
+    }
+    else {
+        sqlQuery += 0 + ", ";
+    }
+    if (useful){
+        sqlQuery += useful + ", ";
+    }
+    else {
+        sqlQuery += 0 + ", ";
+    }
+    if (funny){
+        sqlQuery += funny;
+    }
+    else{
+        sqlQuery += 0;
+    }
+    
+    sqlQuery += ");";
+    console.log(sqlQuery); 
+    pool.query(sqlQuery, (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
 module.exports = {
 
     getState,
@@ -339,4 +396,6 @@ module.exports = {
     getBusinessInfoOrder,
     getBusinessReviews,
     postAddCheckin,
+    postAddReview,
+
 }

@@ -77,3 +77,6 @@ app.get('/businessinfo/:businessID', db.getBusinessInfo)
 app.get('/businessinfo/:businessID/sort/:sortby', db.getBusinessInfoOrder)
 app.get('/reviews/:businessID', db.getBusinessReviews)
 app.post('/checkin/', db.postAddCheckin)
+app.post('/review/', db.postAddReview)
+
+
