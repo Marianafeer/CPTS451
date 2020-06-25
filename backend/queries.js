@@ -399,6 +399,41 @@ const putEditUserLocation = (request, response) => {
 }
 
 
+getBusinessInfo = (request, response) => {
+    const businessID = request.params.businessID;
+    pool.query('select category from category where categoryid=$1', [businessID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+const getBusinessCategories = (request, response) => {
+    const businessID = request.params.businessID;
+    pool.query('select category from category where categoryid=$1', [businessID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+const getBusinessTime = (request, response) => {
+    const businessID = request.params.businessID;
+    let data = {};
+    const today = new Date();
+    const dayMapping = {0: "Sunday", 1: "Monday", 2: "Tuesday", 3:"Wednesday", 4:"Thursday", 5:"Friday", 6:"Saturday"};
+    const day = dayMapping[today.getDay()];
+    pool.query('select opentime, closetime from hours where businessid=$1 and weekday=$2', [businessID, day], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
 
 module.exports = {
 
@@ -440,4 +475,6 @@ module.exports = {
     delRemoveFavBusiness,
     postAddFavBusiness,        
     putEditUserLocation,
+    getBusinessCategories,
+    getBusinessTime,
 }
