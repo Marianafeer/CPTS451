@@ -372,6 +372,17 @@ const delRemoveFavBusiness = (request, response) => {
 }
 
 
+const postAddFavBusiness = (request, response) => {
+    const businessID = request.body.businessID;
+    const userID = request.body.userID;
+    pool.query('insert into favorite values ($1, $2)', [userID, businessID], (error, results) => {
+        if (error) {
+                throw error
+        }
+        response.status(200).json({message: 'Insert successful'})
+    });
+
+}
 
 module.exports = {
 
@@ -411,5 +422,5 @@ module.exports = {
     postAddCheckin,
     postAddReview,
     delRemoveFavBusiness,
-        
+    postAddFavBusiness,        
 }
