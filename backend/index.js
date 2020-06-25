@@ -70,8 +70,17 @@ app.get('/userid/:name', db.getIDFromName)
 app.get('/userinfo/:userid', db.getUserinfoInID)
 
 app.get('/userinfo/', db.getAllUserInfo)
-
-
-
-
-
+app.get('/favoriteBusinesses/:userID', db.getFavoriteBusinesses)
+app.get('/friends/:userID', db.getUserFriends)
+app.get('/latesttips/:userID', db.getFriendTips)
+app.get('/businessinfo/:businessID', db.getBusinessInfo)
+app.get('/businessinfo/:businessID/sort/:sortby', db.getBusinessInfoOrder)
+app.get('/reviews/:businessID', db.getBusinessReviews)
+app.post('/checkin/', db.postAddCheckin)
+app.post('/review/', db.postAddReview)
+app.delete('/favoritebusiness/:businessID/:userID', db.delRemoveFavBusiness)
+app.post('/favbusiness/', db.postAddFavBusiness)
+app.put('/location/:userID', db.putEditUserLocation)
+app.get('/businessInfo/:businessID', db.getBusinessInfo)
+app.get('/getCategories/:businessID', db.getBusinessCategories)
+app.get('/getTime/:businessID', db.getBusinessTime)

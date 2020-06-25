@@ -85,7 +85,7 @@ const getBusinessesInCategory = (request, response) => {
     });
 }*/
 
-const getBusinessInfo = (request, response) => {
+let getBusinessInfo = (request, response) => {
     const name = request.params.name;
     const category = request.params.category;
     pool.query('SELECT DISTINCT * FROM business JOIN ON businessid = categoryid WHERE name = $1 AND category = $2 ORDER BY name', [name, category], (error, results) => {
@@ -216,7 +216,224 @@ const getAllUserInfo = (request, response) => {
     })
 }
 
+// get FavoriteBusinessInfo using userid 
+const getFavoriteBusinesses = (request, response) => {
+    const userid = request.params.userID;
+    pool.query('SELECT * FROM favorite, business WHERE favorite.userid = $1 and favorite.businessid = business.businessid', [userid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
 
+
+const getUserFriends = (request, response) => {
+    const userid = request.params.userID;
+    pool.query('SELECT * from friend, usertable where usertable.userid = friend.friendid and friend.personid = $1', [userid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+const getFriendTips = (request, response) => {
+    const userid = request.params.userID;
+    pool.query('select * from usertable, review, friend where personid=$1 and friend.friendid = usertable.userid and review.userid = friend.friendid;', [userid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+getBusinessInfo = (request, response) => {
+    const businessid = request.params.businessID;
+    pool.query('select * from business where businessid=$1 order by name;', [businessid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+ 
+// Need to make use of order by
+const getBusinessInfoOrder = (request, response) => {
+    const businessid = request.params.businessID;
+    const orderBy = request.params.sortby;
+    let sqlQuery = "select * from business where businessid='" + businessid + "'";
+    if (orderBy) {
+        sqlQuery += ' order by ' + orderBy + ';';
+    }
+    console.log(sqlQuery);
+   pool.query(sqlQuery, (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+ 
+
+const getBusinessReviews = (request, response) => {
+    const businessid = request.params.businessID;
+    pool.query('select * from review where businessid=$1;', [businessid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+const postAddCheckin = (request, response) => {
+    const businessID = request.body.businessID;
+    const today = new Date();
+    const dayMapping = {0: "Sunday", 1: "Monday", 2: "Tuesday", 3:"Wednesday", 4:"Thursday", 5:"Friday", 6:"Saturday"};
+    const day = dayMapping[today.getDay()];
+    const checkintime = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    pool.query('insert into checkin values ($1, $2, 1, $3)', [day, checkintime, businessID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+const postAddReview = (request, response) => {
+    const businessID = request.body.businessID;
+    const userID = request.body.userID;
+    const reviewID = Date.now();
+    const stars = request.body.stars;
+    const reviewtext = request.body.reviewtext;
+    const cool = request.body.cool;
+    const useful = request.body.useful;
+    const funny = request.body.funny;
+    const today = new Date();
+    const datereviewed = today.getFullYear() + "-" + today.getMonth() + "-" + today.getDate();
+    let sqlQuery = "insert into review(businessid, userid, reviewid, stars, textreview, datereviewed, cool, useful, funny) values ('"+ businessID + "', '" + userID + "', '" + reviewID + "', ";
+    if (stars){
+        sqlQuery += stars + ", ";
+    }
+    else {
+        sqlQuery += 0 + ", ";
+    }
+    if (reviewtext){
+        sqlQuery += "'" +  reviewtext + "', ";    
+    }
+    else {
+        sqlQuery += "'-' , ";
+    }
+
+    sqlQuery += "'" + datereviewed + "', ";
+
+    if (cool){
+        sqlQuery += cool + ", ";
+    }
+    else {
+        sqlQuery += 0 + ", ";
+    }
+    if (useful){
+        sqlQuery += useful + ", ";
+    }
+    else {
+        sqlQuery += 0 + ", ";
+    }
+    if (funny){
+        sqlQuery += funny;
+    }
+    else{
+        sqlQuery += 0;
+    }
+    
+    sqlQuery += ");";
+    console.log(sqlQuery); 
+    pool.query(sqlQuery, (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+const delRemoveFavBusiness = (request, response) => {
+    const userID = request.params.userID;
+    const businessID = request.params.businessID;
+    pool.query('delete from favorite where businessid=$1 and userid=$2', [businessID, userID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+const postAddFavBusiness = (request, response) => {
+    const businessID = request.body.businessID;
+    const userID = request.body.userID;
+    pool.query('insert into favorite values ($1, $2)', [userID, businessID], (error, results) => {
+        if (error) {
+                throw error
+        }
+        response.status(200).json({message: 'Insert successful'})
+    });
+
+}
+
+
+
+const putEditUserLocation = (request, response) => {
+    const longitude = request.body.longitude;
+    const latitude = request.body.latitude;
+    const userID = request.params.userID;
+    pool.query('update usertable set longitude=$1, latitude=$2 where userid=$3', [longitude, latitude, userID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json({message: 'Update successful'})
+    });
+}
+
+
+getBusinessInfo = (request, response) => {
+    const businessID = request.params.businessID;
+    pool.query('select category from category where categoryid=$1', [businessID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+const getBusinessCategories = (request, response) => {
+    const businessID = request.params.businessID;
+    pool.query('select category from category where categoryid=$1', [businessID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+const getBusinessTime = (request, response) => {
+    const businessID = request.params.businessID;
+    let data = {};
+    const today = new Date();
+    const dayMapping = {0: "Sunday", 1: "Monday", 2: "Tuesday", 3:"Wednesday", 4:"Thursday", 5:"Friday", 6:"Saturday"};
+    const day = dayMapping[today.getDay()];
+    pool.query('select opentime, closetime from hours where businessid=$1 and weekday=$2', [businessID, day], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
 
 module.exports = {
 
@@ -246,4 +463,18 @@ module.exports = {
     getIDFromName,
     getUserinfoInID,
     getAllUserInfo,
+    // Favorite Business Info
+    getFavoriteBusinesses,
+    getUserFriends,
+    getFriendTips,
+    getBusinessInfo,
+    getBusinessInfoOrder,
+    getBusinessReviews,
+    postAddCheckin,
+    postAddReview,
+    delRemoveFavBusiness,
+    postAddFavBusiness,        
+    putEditUserLocation,
+    getBusinessCategories,
+    getBusinessTime,
 }
