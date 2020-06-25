@@ -384,6 +384,22 @@ const postAddFavBusiness = (request, response) => {
 
 }
 
+
+
+const putEditUserLocation = (request, response) => {
+    const longitude = request.body.longitude;
+    const latitude = request.body.latitude;
+    const userID = request.params.userID;
+    pool.query('update usertable set longitude=$1, latitude=$2 where userid=$3', [longitude, latitude, userID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json({message: 'Update successful'})
+    });
+}
+
+
+
 module.exports = {
 
     getState,
@@ -423,4 +439,5 @@ module.exports = {
     postAddReview,
     delRemoveFavBusiness,
     postAddFavBusiness,        
+    putEditUserLocation,
 }

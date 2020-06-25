@@ -80,3 +80,6 @@ app.post('/checkin/', db.postAddCheckin)
 app.post('/review/', db.postAddReview)
 app.delete('/favoritebusiness/:businessID/:userID', db.delRemoveFavBusiness)
 app.post('/favbusiness/', db.postAddFavBusiness)
+app.put('/location/:userID', db.putEditUserLocation)
+
+
