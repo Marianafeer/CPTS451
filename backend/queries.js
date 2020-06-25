@@ -360,6 +360,19 @@ const postAddReview = (request, response) => {
 }
 
 
+const delRemoveFavBusiness = (request, response) => {
+    const userID = request.params.userID;
+    const businessID = request.params.businessID;
+    pool.query('delete from favorite where businessid=$1 and userid=$2', [businessID, userID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
+
 module.exports = {
 
     getState,
@@ -397,5 +410,6 @@ module.exports = {
     getBusinessReviews,
     postAddCheckin,
     postAddReview,
-
+    delRemoveFavBusiness,
+        
 }
