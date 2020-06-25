@@ -239,6 +239,17 @@ const getUserFriends = (request, response) => {
 }
 
 
+const getFriendTips = (request, response) => {
+    const userid = request.params.userID;
+    pool.query('select * from usertable, review, friend where personid=$1 and friend.friendid = usertable.userid and review.userid = friend.friendid;', [userid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+
+
 module.exports = {
 
     getState,
@@ -270,4 +281,5 @@ module.exports = {
     // Favorite Business Info
     getFavoriteBusinesses,
     getUserFriends,
+    getFriendTips,
 }
