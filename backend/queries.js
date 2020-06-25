@@ -251,7 +251,6 @@ const getFriendTips = (request, response) => {
 
 getBusinessInfo = (request, response) => {
     const businessid = request.params.businessID;
-    console.log(businessid);
     pool.query('select * from business where businessid=$1 order by name;', [businessid], (error, results) => {
         if (error) {
             throw error
@@ -260,6 +259,33 @@ getBusinessInfo = (request, response) => {
     });
 }
  
+// Need to make use of order by
+const getBusinessInfoOrder = (request, response) => {
+    const businessid = request.params.businessID;
+    const orderBy = request.params.sortby;
+    let sqlQuery = "select * from business where businessid='" + businessid + "'";
+    if (orderBy) {
+        sqlQuery += ' order by ' + orderBy + ';';
+    }
+    console.log(sqlQuery);
+   pool.query(sqlQuery, (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
+ 
+
+const getBusinessReviews = (request, response) => {
+    const businessid = request.params.businessID;
+    pool.query('select * from review where businessid=$1;', [businessid], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+}
 
 
 module.exports = {
@@ -294,5 +320,7 @@ module.exports = {
     getFavoriteBusinesses,
     getUserFriends,
     getFriendTips,
-    getBusinessInfo
+    getBusinessInfo,
+    getBusinessInfoOrder,
+    getBusinessReviews,
 }

@@ -74,4 +74,5 @@ app.get('/favoriteBusinesses/:userID', db.getFavoriteBusinesses)
 app.get('/friends/:userID', db.getUserFriends)
 app.get('/latesttips/:userID', db.getFriendTips)
 app.get('/businessinfo/:businessID', db.getBusinessInfo)
-
+app.get('/businessinfo/:businessID/sort/:sortby', db.getBusinessInfoOrder)
+app.get('/reviews/:businessID', db.getBusinessReviews)
