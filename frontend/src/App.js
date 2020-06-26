@@ -24,18 +24,20 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
+import { TableSortLabel } from '@material-ui/core';
 
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      modalIsOpen: false, modalStateIGuess: "", states: [], cities: [], zipcodes: [], categories: [], businesses: [], names: [], userids: [], userinfo: [],
-      selectedState: "", selectedCity: "", selectedZipCode: "", selectedCategory: "", selectedBusiness: "", selectedUserid: "",  sCount: "", cCount: "", zcCount: "", cacCount: "",
+      modalIsOpen: false, modalStateIGuess: "", states: [], cities: [], zipcodes: [], categories: [], businesses: [], names: [], userids: [], userinfo: [], favoriteBusinesses: [], friends: [], latesttips: [], favbusiness: [], businessInfo: [],
+      selectedState: "", selectedCity: "", selectedZipCode: "", selectedCategory: "", selectedBusiness: "", selectedBusinessID: "", selectedUserid: "",  sCount: "", cCount: "", zcCount: "", cacCount: "",
       //user info
       selectedName: ""
     };
 
     this.bName = React.createRef();
+    this.biName = React.createRef();
     this.cName = React.createRef();
     this.sName = React.createRef();
     this.zcName = React.createRef();
@@ -153,16 +155,16 @@ class App extends React.Component {
       });
   }
 
-  //getting the businesses 
+  //getting the businesses in zipcode and category selected and All the business info.
   updateTable = (e) => {
     this.setState({ selectedCategory: e.target.value })
-    fetch("http://localhost:3030/businesses/" + e.target.value)
+    fetch("http://localhost:3030/business/" + this.state.selectedZipCode + "/" + e.target.value)
       .then((response) => {
         return response.json();
       })
       .then(data => {
         let businessFromApi = data.map(business => {
-          return { value: business.name}
+          return { businessname: business.name, businessid: business.businessid, address: business.address}
         });
         this.setState({
           businesses: businessFromApi
@@ -170,7 +172,10 @@ class App extends React.Component {
       }).catch(error => {
         console.log(error);
       });
+
   }
+
+
 
   //user info
   updateUserid = (e) => {
@@ -199,7 +204,8 @@ class App extends React.Component {
       })
       .then(data => {
         let numFansFromApi = data.map(usertable => {
-          return {name: usertable.name, fans: usertable.nfans, avgstars: usertable.avgstars, datejoined: usertable.datejoined }
+          return {name: usertable.name, fans: usertable.nfans, avgstars: usertable.avgstars, datejoined: usertable.datejoined,
+          longitude: usertable.longitude, latitude: usertable.latitude, cool: usertable.cool, funny: usertable.funny, useful: usertable.useful }
         });
         this.setState({
           userinfo: numFansFromApi
@@ -207,8 +213,73 @@ class App extends React.Component {
       }).catch(error => {
         console.log(error);
       });
+
+      fetch("http://localhost:3030/favoriteBusinesses/" + e.target.value)
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let favBusinessFromApi = data.map(business => {
+          return { name: business.name, avgStarRating: business.reviewrating, city: business.city, zipcode: business.zipcode, address: business.address}
+        });
+        this.setState({
+          favoriteBusinesses: favBusinessFromApi
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+
+      fetch("http://localhost:3030/friends/" + e.target.value)
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let friendsFromApi = data.map(friend => {
+          return { name: friend.name, avgstars: friend.avgstars, datejoined: friend.datejoined }
+        });
+        this.setState({
+          friends: friendsFromApi
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+
+      fetch("http://localhost:3030/latesttips/" + e.target.value)
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let latesttipsFromApi = data.map(review => {
+          return { textreview: review.textreview }
+        });
+        this.setState({
+          latesttips: latesttipsFromApi
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+
   }
 
+
+  //save users favorite business
+  saveBusiness = (e) => {
+    fetch("http://localhost:3030/favbusiness/" + this.state.selectedUserid + "/" + this.state.selectedBusiness, {
+    method: 'POST',
+    body: JSON.stringify(e.data), // this should be the data that you want to post
+    })  
+    .then(data => {
+      let FavBusinessToApi = data.map(favorite => {
+        return { value: favorite.userid}
+      });
+      this.setState({
+        favbusiness: FavBusinessToApi
+      });
+    }).catch(error => {
+      console.log(error);
+    });
+  }
+  
 
   fetchStateCount = () => {
     fetch("http://localhost:3030/count/state/" + this.state.selectedState)
@@ -266,8 +337,9 @@ class App extends React.Component {
     })
   }
 
-  updateModal = (name) => {
-    this.setState({ selectedBusiness: name });
+
+  updateModal = (businessname) => {
+    this.setState({ selectedBusiness: businessname});
     this.fetchStateCount();
     this.fetchCityCount();
     this.fetchZipCodeCount();
@@ -336,16 +408,15 @@ class App extends React.Component {
               </Form.Control>
             </Form.Group>
 
-            <div calss = "container">
-              <form action="#">
-              <div class = "form-group">
-                <label> PICK </label>
-                  <select multiple={true} class="form-control" value={this.state.selectedCategory} >
-                  {this.state.categories.map((category) => <option key={category.value} value={category.value}> {category.display } </option>)}
-                  </select>
-              </div>
-              </form>
-            </div>
+          {
+            <Form.Group controlId="exampleForm.ControlSelect4">
+              <Form.Label>BusinessID</Form.Label>
+              <Form.Control as="select" value={this.state.selectedBusinessID} >
+                {this.state.businessInfo.map((business) => <option key={business.businessid} value={business.businessid}> {business.display } </option>)}
+              </Form.Control>
+          </Form.Group> }
+
+
           </Form>
         </div>
 
@@ -354,26 +425,28 @@ class App extends React.Component {
           <thead>
             <tr>
               <th>Business Name</th>
+              <th>BusinessID</th>
               <th>State</th>
               <th>City</th>
               <th>zipcode</th>
               <th>Category</th>
+              <th>Address</th>
             </tr>
           </thead>
           <tbody>
-            {this.state.businesses.map((business) => <tr key={business.value} value={business.value}>
-              <td onClick={() => this.updateModal(business.value)}>{business.value}</td>
+            {this.state.businesses.map((business) => <tr key={business.businessid} value={business.businessid}>
+              <td onClick={() => this.updateModal(business.businessid)}>{business.businessname}</td>
+              <td> {business.businessid}</td>
               <td>{this.state.selectedState}</td>
               <td>{this.state.selectedCity}</td>
               <td>{this.state.selectedZipCode}</td>
               <td>{this.state.selectedCategory}</td>
+              <td>{business.address}</td>
             </tr>)}
           </tbody>
         </Table>
         </div>
-
         </div>
-
 
         <div className= "BusinessModal"> 
         <Modal show={this.state.modalIsOpen} onHide={this.hideModal}>
@@ -383,10 +456,13 @@ class App extends React.Component {
           <Modal.Body>
             <div className="modalBody">
               <div id="bName">Name: {this.state.selectedBusiness}</div>
-              <div id="zcName">ZipCode: {this.state.selectedZipCode}</div>
-              <div id="cName">City: {this.state.selectedCity}</div>
-              <div id="sName">State: {this.state.selectedState}</div>
-              <div id="sName">State: {this.state.selectedCategory}</div>
+              <div id = "biName">BusinessID: {this.businessid}</div>
+              <div id="zcName" > Address: </div>
+              <div id="cName">Open/Close Times:</div>
+              <div id="sName">Categories:</div>
+              <div> Distance to User: </div>
+              
+              
               <div id="cCount">Businesses in City: {this.state.cCount}</div>
               <div id="sCount">Businesses in State: {this.state.sCount}</div>
             </div>
@@ -395,7 +471,7 @@ class App extends React.Component {
             <Button variant="secondary" onClick={this.hideModal}>
               Close
             </Button>
-            <Button variant= "primary">
+            <Button variant= "primary" onClick={this.state.saveBusiness}>
               Mark as Favorite
             </Button>
           </Modal.Footer>
@@ -406,16 +482,18 @@ class App extends React.Component {
 
         {/*User Information Tab */}
         <TabPanel>
-        <div className="body">
+        <div className="bodyUser">
+        
         <div className = "selectUser">
           <Form>
 
             <Form.Label>User Information</Form.Label>
+            {/*
             <Form>
               <Form.Control type ="input" placeholder="Enter your Name" >
 
               </Form.Control>
-            </Form>
+            </Form>*/}
 
             <Form>
             <Form.Group controlId="exampleForm.ControlSelect1">
@@ -437,11 +515,12 @@ class App extends React.Component {
               </Form.Control>
             </Form.Group>
             </Form>
-          
           </Form>
         </div>
 
+
         <div className="UserTable">
+
           <Table striped bordered hover id="dataTable">
             <tbody>
               {this.state.userinfo.map((usertable) => 
@@ -450,6 +529,7 @@ class App extends React.Component {
                 <td>{usertable.name}</td>
               </tr>)}
 
+              <tr><th>UserID</th><td>{this.state.selectedUserid}</td></tr>
               {this.state.userinfo.map((usertable) => 
               <tr key={usertable.value} value={usertable.value}>
                 <th>Number Fans:</th>
@@ -468,10 +548,107 @@ class App extends React.Component {
                 <td>{usertable.datejoined}</td>
               </tr>)}
 
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Latitude:</th>
+                <td>{usertable.latitude}</td>
+              </tr>)}
+
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Longitude:</th>
+                <td>{usertable.longitude}</td>
+              </tr>)}
+
             </tbody>
             </Table>
+
+            <div classname = "UserTableVotes">
+            <label textAlign = "center">User's Votes</label>
+            <Table striped bordered hover id="dataTable">
+            <tbody>
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Cool:</th>
+                <td>{usertable.cool}</td>
+              </tr>)}
+
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Funny:</th>
+                <td>{usertable.funny}</td>
+              </tr>)}
+
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Useful:</th>
+                <td>{usertable.useful}</td>
+              </tr>)}
+
+            </tbody>
+      </Table>
+      </div>
+
+            
+
         </div>
 
+      
+
+
+        <div className="TableFriend">
+        <label>User's Favorite Businesses </label>
+        <Table striped bordered hover id="dataTable">
+          <thead>
+            <tr>
+              <th>Business Name</th>
+              <th>Avg Star Rating</th>
+              <th>City</th>
+              <th>Zipcode</th>
+              <th>Address</th>
+              <th>UnFav</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.favoriteBusinesses.map((business) => <tr key={business.name} value={business.name}>
+              <td>{business.name}</td>
+              <td>{business.avgStarRating}</td>
+              <td>{business.city}</td>
+              <td>{business.zipcode}</td>
+              <td>{business.address}</td>
+              <td><Button variant="secondary" onClick={this.hideModal}>
+              UnFav
+            </Button></td>
+             
+            </tr>)}
+          </tbody>
+        </Table>
+        </div>
+
+        <div className="TableFriend">
+        <label>User's Friends </label>
+        <Table striped bordered hover id="dataTable">
+          <thead>
+            <tr>
+              <th>Friend's Name</th>
+              <th>Star rating</th>
+              <th>Date Joined</th>
+              <th>Lastest Review</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.friends.map((friend) => <tr key={friend.name} value={friend.name}>
+              <td>{friend.name}</td>
+              <td>{friend.avgstars}</td>
+              <td>{friend.datejoined}</td>
+              {this.state.latesttips.map((review) => <tr key={review.textreview} value={review.textreview}>
+              <td>{review.textreview}</td>
+            </tr>)}
+            </tr>)}
+
+          </tbody>
+        </Table>
+        </div>
 
         </div>
 
