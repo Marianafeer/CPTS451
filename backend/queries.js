@@ -156,7 +156,7 @@ const getBusinessesfromCategories = (request, response) => {
             if (zipcode){
                             sqlQuery += " AND zipcode=" + zipcode;
                         }
-            sqlQuery += ';';
+            sqlQuery += ' order by name;';
             console.log(sqlQuery);
             pool.query(sqlQuery, (error, results) => {
                             if (error) {
@@ -164,6 +164,81 @@ const getBusinessesfromCategories = (request, response) => {
                                             }
                             response.status(200).json(results.rows)
                         });
+}
+
+
+const SearchBusiness = (request, response) => {
+    const city = request.body.city;
+    const state = request.body.state;
+    const zipcode =  request.body.zipcode;
+    const categories =  request.body.categories;
+    const orderby =  request.body.sort;
+    const businessName = request.body.name;
+    let sqlQuery = 'SELECT * FROM business';
+    console.log("categories = "+categories);
+    if (categories) {    
+        sqlQuery += ', (';
+        for (i = 0; i < categories.length; i++) {
+            if (i > 0){
+                sqlQuery += ' INTERSECT ';
+            }       
+            sqlQuery += 'SELECT categoryid FROM category WHERE category=' + "'" + categories[i] + "'";
+        }
+        sqlQuery += ') as businessCategories WHERE categoryid=businessid';
+    }
+    
+    console.log("zipcode = "+zipcode);
+    if (zipcode && categories){
+        sqlQuery += " AND zipcode=" + zipcode;
+    }
+    else if (zipcode) {
+        sqlQuery += " WHERE zipcode=" + zipcode;
+    }
+    if (state && (zipcode || categories)){
+        sqlQuery += " AND state=" + state;
+    }
+    else if (state) {
+        sqlQuery += " WHERE state=" + state;
+    }
+    if (city && (zipcode || state || categories)){
+        sqlQuery += " AND city=" + city;
+    }
+    else if (city) {
+        sqlQuery += " WHERE city=" + city;
+    }
+    if (businessName && (zipcode || state || categories || city)){
+        sqlQuery += " AND name=" + businessName;
+    }
+    else if (city) {
+        sqlQuery += " WHERE name=" + businessName;
+    }
+    
+    switch (orderby){
+        case 'stars':
+            sqlQuery += ' order by stars;';
+            break;
+        case 'reviewcount':
+            sqlQuery += ' order by reviewcount;';
+            break;
+        case 'reviewrating':
+            sqlQuery += ' order by reviewrating;';
+            break;
+        case 'num_checkins': 
+            sqlQuery += ' order by num_checkins;';
+            break;
+        case 'nearest':
+            //do something
+            break;
+        default:
+            sqlQuery += ' order by name;';
+    }
+    console.log("query = " + sqlQuery)
+    pool.query(sqlQuery, (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
 }
 
 
@@ -477,4 +552,5 @@ module.exports = {
     putEditUserLocation,
     getBusinessCategories,
     getBusinessTime,
+    SearchBusiness,
 }
