@@ -174,7 +174,9 @@ const SearchBusiness = (request, response) => {
     const categories =  request.body.categories;
     const orderby =  request.body.sort;
     const businessName = request.body.name;
-    let sqlQuery = 'SELECT * FROM business';
+    const userID = request.body.userID;
+    const businessID = request.body.businessID;
+    let sqlQuery = 'SELECT *, (select myDistance(usertable.longitude,usertable.latitude,business.longitude,business.latitude)) as dist FROM business, usertable';
     console.log("categories = "+categories);
     if (categories) {    
         sqlQuery += ', (';
@@ -186,31 +188,28 @@ const SearchBusiness = (request, response) => {
         }
         sqlQuery += ') as businessCategories WHERE categoryid=businessid';
     }
-    
+
+    if (categories){
+        sqlQuery = " AND usertable.userid='" + userID + "'";
+    }
+    else {
+        sqlQuery += " WHERE usertable.userid='" + userID + "'";
+    }
     console.log("zipcode = "+zipcode);
-    if (zipcode && categories){
+    if (zipcode){
         sqlQuery += " AND zipcode=" + zipcode;
     }
-    else if (zipcode) {
-        sqlQuery += " WHERE zipcode=" + zipcode;
-    }
-    if (state && (zipcode || categories)){
+    if (state){
         sqlQuery += " AND state=" + state;
     }
-    else if (state) {
-        sqlQuery += " WHERE state=" + state;
-    }
-    if (city && (zipcode || state || categories)){
+    if (city){
         sqlQuery += " AND city=" + city;
     }
-    else if (city) {
-        sqlQuery += " WHERE city=" + city;
+    if (businessName){
+        sqlQuery += " AND name='" + businessName + "'";
     }
-    if (businessName && (zipcode || state || categories || city)){
-        sqlQuery += " AND name=" + businessName;
-    }
-    else if (city) {
-        sqlQuery += " WHERE name=" + businessName;
+    if (businessID) {
+        sqlQuery += " AND businessid='" + businessID + "'";
     }
     
     switch (orderby){
@@ -227,10 +226,10 @@ const SearchBusiness = (request, response) => {
             sqlQuery += ' order by num_checkins;';
             break;
         case 'nearest':
-            //do something
+            sqlQuery += ' order by dist;';
             break;
         default:
-            sqlQuery += ' order by name;';
+            sqlQuery += ' order by business.name;';
     }
     console.log("query = " + sqlQuery)
     pool.query(sqlQuery, (error, results) => {
