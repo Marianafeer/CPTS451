@@ -189,10 +189,10 @@ const SearchBusiness = (request, response) => {
         sqlQuery += ') as businessCategories WHERE categoryid=businessid';
     }
 
-    if (categories){
-        sqlQuery = " AND usertable.userid='" + userID + "'";
+    if (userID && categories){
+        sqlQuery += " AND usertable.userid='" + userID + "'";
     }
-    else {
+    else if (userID){
         sqlQuery += " WHERE usertable.userid='" + userID + "'";
     }
     console.log("zipcode = "+zipcode);
@@ -327,7 +327,7 @@ const getUserFriends = (request, response) => {
 
 const getFriendTips = (request, response) => {
     const userid = request.params.userID;
-    pool.query('select * from usertable, review, friend where personid=$1 and friend.friendid = usertable.userid and review.userid = friend.friendid and datereview >= (select max(datereviewed) from review as R where R.userid=usertable.userid);', [userid], (error, results) => {
+    pool.query('select * from usertable, review, friend where personid=$1 and friend.friendid = usertable.userid and review.userid = friend.friendid and datereviewed >= (select max(datereviewed) from review as R where R.userid=usertable.userid);', [userid], (error, results) => {
         if (error) {
             throw error
         }
