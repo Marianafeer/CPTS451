@@ -242,6 +242,18 @@ const SearchBusiness = (request, response) => {
 }
 
 
+const BusinessReviewsByFriends = (request, response) => { 
+    const userID = request.params.userID;
+    const businessID = request.params.businessID;
+    pool.query('select * from review, friend, usertable where personid=$1 and friendid=review.userid and usertable.userid=review.userid and review.businessid=$2', [userID, businessID], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    });
+
+}
+
 //USER INFORMATION
 const getAllNames = (request, response) => {
     pool.query('SELECT DISTINCT name FROM usertable ORDER BY name', (error, results) => {
@@ -316,7 +328,7 @@ const getUserFriends = (request, response) => {
 
 const getFriendTips = (request, response) => {
     const userid = request.params.userID;
-    pool.query('select * from usertable, review, friend where personid=$1 and friend.friendid = usertable.userid and review.userid = friend.friendid;', [userid], (error, results) => {
+    pool.query('select * from usertable, review, friend where personid=$1 and friend.friendid = usertable.userid and review.userid = friend.friendid and datereview >= (select max(datereviewed) from review as R where R.userid=usertable.userid);', [userid], (error, results) => {
         if (error) {
             throw error
         }
@@ -553,4 +565,6 @@ module.exports = {
     getBusinessCategories,
     getBusinessTime,
     SearchBusiness,
+    BusinessReviewsByFriends,
+
 }
