@@ -45,17 +45,10 @@ app.get('/city/:state', db.getCitiesInState)
 app.get('/zipcode/:city', db.getZipcodeInCity)
 app.get('/category/:zipcode', db.getCategoriesInZipcode)
 
-//app.get('/category', db.getAllCategories)
-
-
-//app.get("/getcategories/", db.getCategories)
-
 app.get('/businesses/', db.getAllBusinesses)
-//app.get('/businesses/:category', db.getBusinessesInCategory)
 
-app.get('/businesses/:category', db.getBusinessesInCategory)
+//app.get('/businesses/:city/:name', db.getAllBusinessInfo)
 
-app.get('/businesses/:city/:name', db.getBusinessInfo)
 app.get('/count/state/:state', db.getBusinessSC)
 app.get('/count/city/:city', db.getBusinessCC)
 app.get('/count/zipcode/:zipcode', db.getBusinessZCC)
@@ -68,19 +61,25 @@ app.get('/name', db.getAllNames)
 app.get('/name/:name', db.getName)
 app.get('/userid/:name', db.getIDFromName)
 app.get('/userinfo/:userid', db.getUserinfoInID)
-
 app.get('/userinfo/', db.getAllUserInfo)
+
 app.get('/favoriteBusinesses/:userID', db.getFavoriteBusinesses)
 app.get('/friends/:userID', db.getUserFriends)
 app.get('/latesttips/:userID', db.getFriendTips)
-app.get('/businessinfo/:businessID', db.getBusinessInfo)
+
+app.get('/businessInfo/:businessID', db.getAllBusinessInfo)
+
 app.get('/businessinfo/:businessID/sort/:sortby', db.getBusinessInfoOrder)
 app.get('/reviews/:businessID', db.getBusinessReviews)
 app.post('/checkin/', db.postAddCheckin)
 app.post('/review/', db.postAddReview)
+
 app.delete('/favoritebusiness/:businessID/:userID', db.delRemoveFavBusiness)
+
 app.post('/favbusiness/', db.postAddFavBusiness)
+
 app.put('/location/:userID', db.putEditUserLocation)
-app.get('/businessInfo/:businessID', db.getBusinessInfo)
+
+
 app.get('/getCategories/:businessID', db.getBusinessCategories)
 app.get('/getTime/:businessID', db.getBusinessTime)

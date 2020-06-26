@@ -74,17 +74,6 @@ const getBusinessesInCategory = (request, response) => {
     });
 }
 
-/* we need to get business depending on the category selected 
-const getBusinessesInCategory = (request, response) => {
-    const category = request.params.category;
-    pool.query('SELECT name  FROM business JOIN category ON businessid = categoryid', (error, results) => {
-        if (error) {
-            throw error
-        }
-        response.status(200).json(results.rows)
-    });
-}*/
-
 let getBusinessInfo = (request, response) => {
     const name = request.params.name;
     const category = request.params.category;
@@ -249,7 +238,7 @@ const getFriendTips = (request, response) => {
     });
 }
 
-getBusinessInfo = (request, response) => {
+const getAllBusinessInfo = (request, response) => {
     const businessid = request.params.businessID;
     pool.query('select * from business where businessid=$1 order by name;', [businessid], (error, results) => {
         if (error) {
@@ -258,6 +247,7 @@ getBusinessInfo = (request, response) => {
         response.status(200).json(results.rows)
     });
 }
+
  
 // Need to make use of order by
 const getBusinessInfoOrder = (request, response) => {
@@ -399,7 +389,8 @@ const putEditUserLocation = (request, response) => {
 }
 
 
-getBusinessInfo = (request, response) => {
+/*
+const getBusinessInfo = (request, response) => {
     const businessID = request.params.businessID;
     pool.query('select category from category where categoryid=$1', [businessID], (error, results) => {
         if (error) {
@@ -407,7 +398,7 @@ getBusinessInfo = (request, response) => {
         }
         response.status(200).json(results.rows)
     });
-}
+}*/
 
 
 const getBusinessCategories = (request, response) => {
@@ -443,12 +434,11 @@ module.exports = {
     getZipcodeInCity,
     getCategoriesInZipcode,
 
-    //getAllCategories,
 
-    //getCategories,
     getAllBusinesses,
     getBusinessesInCategory,
-    //getBusinessesInCategory,
+    getAllBusinessInfo,
+
     getBusinessInfo,
     getBusinessSC,
     getBusinessCC,
@@ -457,17 +447,18 @@ module.exports = {
     getBusinessesfromCategories, 
 
 
-    //USER INFORMATION
+    //User information
     getName,
     getAllNames,
     getIDFromName,
     getUserinfoInID,
     getAllUserInfo,
+
     // Favorite Business Info
     getFavoriteBusinesses,
     getUserFriends,
     getFriendTips,
-    getBusinessInfo,
+    getAllBusinessInfo,
     getBusinessInfoOrder,
     getBusinessReviews,
     postAddCheckin,
