@@ -29,7 +29,7 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      modalIsOpen: false, modalStateIGuess: "", states: [], cities: [], zipcodes: [], categories: [], businesses: [], names: [], userids: [], userinfo: [],
+      modalIsOpen: false, modalStateIGuess: "", states: [], cities: [], zipcodes: [], categories: [], businesses: [], names: [], userids: [], userinfo: [], favoriteBusinesses: [], friends: [],
       selectedState: "", selectedCity: "", selectedZipCode: "", selectedCategory: "", selectedBusiness: "", selectedUserid: "",  sCount: "", cCount: "", zcCount: "", cacCount: "",
       //user info
       selectedName: ""
@@ -199,7 +199,8 @@ class App extends React.Component {
       })
       .then(data => {
         let numFansFromApi = data.map(usertable => {
-          return {name: usertable.name, fans: usertable.nfans, avgstars: usertable.avgstars, datejoined: usertable.datejoined }
+          return {name: usertable.name, fans: usertable.nfans, avgstars: usertable.avgstars, datejoined: usertable.datejoined,
+          longitude: usertable.longitude, latitude: usertable.latitude }
         });
         this.setState({
           userinfo: numFansFromApi
@@ -207,8 +208,51 @@ class App extends React.Component {
       }).catch(error => {
         console.log(error);
       });
+
+      fetch("http://localhost:3030/favoriteBusinesses/" + e.target.value)
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let favBusinessFromApi = data.map(business => {
+          return { name: business.name, avgStarRating: business.reviewrating, city: business.city, zipcode: business.zipcode, address: business.address}
+        });
+        this.setState({
+          favoriteBusinesses: favBusinessFromApi
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+
+      fetch("http://localhost:3030/friends/" + e.target.value)
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let friendsFromApi = data.map(friend => {
+          return { name: friend.name, avgstars: friend.avgstars, datejoined: friend.datejoined }
+        });
+        this.setState({
+          friends: friendsFromApi
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+
   }
 
+
+  //save users favorite business
+  saveBusiness = (e) => {
+    fetch("http://localhost:3030/favbusiness/" + this.state.selectedUserid + "/"+this.state.selectedBusiness)
+    .then((response) => {
+      return response.json();
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+  
 
   fetchStateCount = () => {
     fetch("http://localhost:3030/count/state/" + this.state.selectedState)
@@ -386,7 +430,7 @@ class App extends React.Component {
               <div id="zcName">ZipCode: {this.state.selectedZipCode}</div>
               <div id="cName">City: {this.state.selectedCity}</div>
               <div id="sName">State: {this.state.selectedState}</div>
-              <div id="sName">State: {this.state.selectedCategory}</div>
+              <div id="sName">Category: {this.state.selectedCategory}</div>
               <div id="cCount">Businesses in City: {this.state.cCount}</div>
               <div id="sCount">Businesses in State: {this.state.sCount}</div>
             </div>
@@ -395,7 +439,7 @@ class App extends React.Component {
             <Button variant="secondary" onClick={this.hideModal}>
               Close
             </Button>
-            <Button variant= "primary">
+            <Button variant= "primary" onClick={this.state.saveBusiness}>
               Mark as Favorite
             </Button>
           </Modal.Footer>
@@ -406,7 +450,8 @@ class App extends React.Component {
 
         {/*User Information Tab */}
         <TabPanel>
-        <div className="body">
+        <div className="bodyUser">
+        
         <div className = "selectUser">
           <Form>
 
@@ -437,9 +482,9 @@ class App extends React.Component {
               </Form.Control>
             </Form.Group>
             </Form>
-          
           </Form>
         </div>
+
 
         <div className="UserTable">
           <Table striped bordered hover id="dataTable">
@@ -468,10 +513,67 @@ class App extends React.Component {
                 <td>{usertable.datejoined}</td>
               </tr>)}
 
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Latitude:</th>
+                <td>{usertable.latitude}</td>
+              </tr>)}
+
+              {this.state.userinfo.map((usertable) => 
+              <tr key={usertable.value} value={usertable.value}>
+                <th>Longitude:</th>
+                <td>{usertable.longitude}</td>
+              </tr>)}
+
             </tbody>
             </Table>
         </div>
 
+
+        <div className="TableUser">
+        <Table striped bordered hover id="dataTable">
+          <thead>
+            <tr>
+              <th>Business Name</th>
+              <th>Avg Star Rating</th>
+              <th>City</th>
+              <th>Zipcode</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.favoriteBusinesses.map((business) => <tr key={business.name} value={business.name}>
+              <td>{business.name}</td>
+              <td>{business.avgStarRating}</td>
+              <td>{business.city}</td>
+              <td>{business.zipcode}</td>
+              <td>{business.address}</td>
+             
+            </tr>)}
+          </tbody>
+        </Table>
+        </div>
+
+        <div className="TableUser">
+        <Table striped bordered hover id="dataTable">
+          <thead>
+            <tr>
+              <th>Friend's Name</th>
+              <th>Star rating</th>
+              <th>Date Joined</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.friends.map((friend) => <tr key={friend.name} value={friend.name}>
+              <td>{friend.name}</td>
+              <td>{friend.avgstars}</td>
+              <td>{friend.datejoined}</td>
+              
+             
+            </tr>)}
+          </tbody>
+        </Table>
+        </div>
 
         </div>
 
