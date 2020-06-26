@@ -29,7 +29,7 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      modalIsOpen: false, modalStateIGuess: "", states: [], cities: [], zipcodes: [], categories: [], businesses: [], names: [], userids: [], userinfo: [], favoriteBusinesses: [], friends: [],
+      modalIsOpen: false, modalStateIGuess: "", states: [], cities: [], zipcodes: [], categories: [], businesses: [], names: [], userids: [], userinfo: [], favoriteBusinesses: [], friends: [], latesttips: [],
       selectedState: "", selectedCity: "", selectedZipCode: "", selectedCategory: "", selectedBusiness: "", selectedUserid: "",  sCount: "", cCount: "", zcCount: "", cacCount: "",
       //user info
       selectedName: ""
@@ -153,10 +153,10 @@ class App extends React.Component {
       });
   }
 
-  //getting the businesses 
+  //getting the businesses in zipcode and category selected
   updateTable = (e) => {
     this.setState({ selectedCategory: e.target.value })
-    fetch("http://localhost:3030/businesses/" + e.target.value)
+    fetch("http://localhost:3030/business/" + this.state.selectedZipCode + "/" + e.target.value)
       .then((response) => {
         return response.json();
       })
@@ -234,6 +234,21 @@ class App extends React.Component {
         });
         this.setState({
           friends: friendsFromApi
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+
+      fetch("http://localhost:3030/latesttips/" + e.target.value)
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let latesttipsFromApi = data.map(review => {
+          return { textreview: review.textreview }
+        });
+        this.setState({
+          latesttips: latesttipsFromApi
         });
       }).catch(error => {
         console.log(error);
@@ -380,16 +395,6 @@ class App extends React.Component {
               </Form.Control>
             </Form.Group>
 
-            <div calss = "container">
-              <form action="#">
-              <div class = "form-group">
-                <label> PICK </label>
-                  <select multiple={true} class="form-control" value={this.state.selectedCategory} >
-                  {this.state.categories.map((category) => <option key={category.value} value={category.value}> {category.display } </option>)}
-                  </select>
-              </div>
-              </form>
-            </div>
           </Form>
         </div>
 
@@ -431,6 +436,9 @@ class App extends React.Component {
               <div id="cName">City: {this.state.selectedCity}</div>
               <div id="sName">State: {this.state.selectedState}</div>
               <div id="sName">Category: {this.state.selectedCategory}</div>
+              <div> Distance: </div>
+              
+              
               <div id="cCount">Businesses in City: {this.state.cCount}</div>
               <div id="sCount">Businesses in State: {this.state.sCount}</div>
             </div>
@@ -495,6 +503,9 @@ class App extends React.Component {
                 <td>{usertable.name}</td>
               </tr>)}
 
+              <tr><th>UserID</th><td>{this.state.selectedUserid}</td></tr>
+
+
               {this.state.userinfo.map((usertable) => 
               <tr key={usertable.value} value={usertable.value}>
                 <th>Number Fans:</th>
@@ -554,13 +565,14 @@ class App extends React.Component {
         </Table>
         </div>
 
-        <div className="TableUser">
+        <div className="TableFriend">
         <Table striped bordered hover id="dataTable">
           <thead>
             <tr>
               <th>Friend's Name</th>
               <th>Star rating</th>
               <th>Date Joined</th>
+              <th>Lastest Review</th>
             </tr>
           </thead>
           <tbody>
@@ -568,9 +580,11 @@ class App extends React.Component {
               <td>{friend.name}</td>
               <td>{friend.avgstars}</td>
               <td>{friend.datejoined}</td>
-              
-             
+              {this.state.latesttips.map((review) => <tr key={review.textreview} value={review.textreview}>
+              <td>{review.textreview}</td>
             </tr>)}
+            </tr>)}
+
           </tbody>
         </Table>
         </div>
