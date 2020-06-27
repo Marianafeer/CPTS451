@@ -30,8 +30,8 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      modalIsOpen: false, modalStateIGuess: "", states: [], cities: [], zipcodes: [], categories: [], businesses: [], names: [], userids: [], userinfo: [], favoriteBusinesses: [], friends: [], latesttips: [], favbusiness: [], businessInfo: [],
-      selectedState: "", selectedCity: "", selectedZipCode: "", selectedCategory: "", selectedBusiness: "", selectedBusinessID: "", selectedUserid: "",  sCount: "", cCount: "", zcCount: "", cacCount: "",
+      modalIsOpen: false, modalStateIGuess: "", states: [], cities: [], zipcodes: [], categories: [], businesses: [], names: [], userids: [], userinfo: [], favoriteBusinesses: [], friends: [], latesttips: [], favbusiness: [], businessInfo: [], allcategories: [], allreviews: [], getCategories: [], getReviews: [], businesstimes: [],
+      selectedState: "", selectedCity: "", selectedZipCode: "", selectedCategory: "", selectedBusiness: "", selectedBusinessID: "", selectedAddress: "",  selectedStars: "" , selectedNumCheckins: "", selectedReviewRating: "" , selectedUserid: "",  sCount: "", cCount: "", zcCount: "", cacCount: "", 
       //user info
       selectedName: ""
     };
@@ -164,10 +164,12 @@ class App extends React.Component {
       })
       .then(data => {
         let businessFromApi = data.map(business => {
-          return { businessname: business.name, businessid: business.businessid, address: business.address}
+          return { name: business.name, businessid: business.businessid, baddress: business.address, stars: business.stars,
+          num_checkins: business.num_checkins, reviewrating: business.reviewrating}
         });
         this.setState({
-          businesses: businessFromApi
+          businesses: businessFromApi,
+          businessInfo: [{ value: '', businessid: 'Select A BusinessID' }].concat(businessFromApi)
         });
       }).catch(error => {
         console.log(error);
@@ -176,6 +178,99 @@ class App extends React.Component {
   }
 
 
+
+  //get businessInfo
+  updateBusinessInfoTable = (e) => {
+    this.setState({ selectedBusinessID: e.target.value })
+    fetch("http://localhost:3030/getcategories/" + e.target.value  )
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let allbusinessInfoFromApi = data.map(category=> {
+          return { bcategory: category.category}
+        });
+        this.setState({
+          //businessInfo: [{ value: '', businessid: 'Select A BusinessID' }].concat(businessInfoFromApi)
+          allcategories: allbusinessInfoFromApi
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+
+      fetch("http://localhost:3030/getTime/" + e.target.value  )
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let businessTimesInfoFromApi = data.map(hours=> {
+          return { opentime: hours.opentime, closetime: hours.closetime }
+        });
+        this.setState({
+          //businessInfo: [{ value: '', businessid: 'Select A BusinessID' }].concat(businessInfoFromApi)
+          businesstimes: businessTimesInfoFromApi
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+
+      fetch("http://localhost:3030/reviews/" + e.target.value  )
+      .then((response) => {
+        return response.json();
+      })
+      .then(data => {
+        let allreviewsFromApi = data.map(review=> {
+          return { textreview: review.textreview, stars: review.stars, datereviewed: review.datereviewed}
+        });
+        this.setState({
+          //businessInfo: [{ value: '', businessid: 'Select A BusinessID' }].concat(businessInfoFromApi)
+          allreviews: allreviewsFromApi
+        });
+      }).catch(error => {
+        console.log(error);
+      });
+
+
+
+  }
+/*
+//get business categories
+getBusinessCategories = (e) => {
+  this.setState({ selectedBusinessID: e.target.value })
+  fetch("http://localhost:3030/getCategories/" + e.target.value)
+    .then((response) => {
+      return response.json();
+    })
+    .then(data => {
+      let getCategoriesFromApi = data.map(category => {
+        return {category: category.category}
+      });
+      this.setState({
+        getCategories: getCategoriesFromApi
+      });
+    }).catch(error => {
+      console.log(error);
+    });
+}
+*/
+/*
+getbusinessReview = (e) => {
+  this.setState({ selectedBusinessID: e.target.value })
+  fetch("http://localhost:3030/reviews/" + e.target.value)
+    .then((response) => {
+      return response.json();
+    })
+    .then(data => {
+      let getreviewsFromApi = data.map(review => {
+        return {stars: review.stars}
+      });
+      this.setState({
+        getReviews: getreviewsFromApi
+      });
+    }).catch(error => {
+      console.log(error);
+    });
+}*/
 
   //user info
   updateUserid = (e) => {
@@ -338,8 +433,10 @@ class App extends React.Component {
   }
 
 
-  updateModal = (businessname) => {
-    this.setState({ selectedBusiness: businessname});
+  updateModal = (name, businessid, address, stars , num_checkins, reviewrating) => {
+    this.setState({ selectedBusiness: name, selectedBusinessID: businessid, selectedAddress: address,
+    selectedStars: stars, selectedNumCheckins: num_checkins, selectedReviewRating: reviewrating  });
+
     this.fetchStateCount();
     this.fetchCityCount();
     this.fetchZipCodeCount();
@@ -408,14 +505,12 @@ class App extends React.Component {
               </Form.Control>
             </Form.Group>
 
-          {
             <Form.Group controlId="exampleForm.ControlSelect4">
               <Form.Label>BusinessID</Form.Label>
-              <Form.Control as="select" value={this.state.selectedBusinessID} >
-                {this.state.businessInfo.map((business) => <option key={business.businessid} value={business.businessid}> {business.display } </option>)}
+              <Form.Control as="select" value={this.state.selectedBusinessID} onChange={this.updateBusinessInfoTable}>
+                {this.state.businessInfo.map((business) => <option key={business.businessid} value={business.businessid}> {business.businessid} </option>)}
               </Form.Control>
-          </Form.Group> }
-
+            </Form.Group>
 
           </Form>
         </div>
@@ -429,25 +524,77 @@ class App extends React.Component {
               <th>State</th>
               <th>City</th>
               <th>zipcode</th>
-              <th>Category</th>
-              <th>Address</th>
             </tr>
           </thead>
           <tbody>
-            {this.state.businesses.map((business) => <tr key={business.businessid} value={business.businessid}>
-              <td onClick={() => this.updateModal(business.businessid)}>{business.businessname}</td>
+            {this.state.businesses.map((business) => <tr key={business.name} value={business.name}>
+              <td onClick={() => this.updateModal(business.name, business.businessid, business.baddress, business.stars, business.num_checkins, business.reviewrating)}>{business.name}</td>
               <td> {business.businessid}</td>
               <td>{this.state.selectedState}</td>
               <td>{this.state.selectedCity}</td>
               <td>{this.state.selectedZipCode}</td>
-              <td>{this.state.selectedCategory}</td>
-              <td>{business.address}</td>
-            </tr>)}
+              </tr>)}
+              
           </tbody>
         </Table>
-        </div>
+        </div>        
+
+        <div className="TableInfo">     
+          <Table striped bordered hover id="dataTable">
+            <tbody>
+          
+              <th>Categories:</th>
+              {this.state.allcategories.map((category) =>
+              <tr key={category.bcategory} value={category.bcategory}>
+                <td>{category.bcategory}</td>
+              </tr>)}
+
+              {this.state.businesstimes.map((hours) =>
+             <tr key={hours.opentime} value={hours.closetime}>
+                <th>Open Time:</th>
+                <td>{hours.opentime}</td>
+              </tr>)}
+
+              {this.state.businesstimes.map((hours) =>
+             <tr key={hours.opentime} value={hours.closetime}>
+                <th>Close Time:</th>
+                <td>{hours.closetime}</td>
+              </tr>)}
+
+
+            </tbody>
+          </Table>
         </div>
 
+
+        <div className="TableInfo">     
+          <Table striped bordered hover id="dataTable">
+            <tbody>
+          
+            <th>Reviews:</th>
+            {this.state.allreviews.map((review) =>
+             <tr key={review.textreview} value={review.textreview}>
+                <td>{review.textreview}</td>
+              </tr>)}
+
+            <th>Stars:</th>
+            {this.state.allreviews.map((review) =>
+             <tr key={review.textreview} value={review.textreview}>
+                <td>{review.stars}</td>
+              </tr>)}
+            
+            <th>Date Reviewed:</th>
+            {this.state.allreviews.map((review) =>
+             <tr key={review.textreview} value={review.textreview}>
+                <td>{review.datereviewed}</td>
+              </tr>)}
+            </tbody>
+          </Table>
+        </div>
+
+      
+
+        </div>
         <div className= "BusinessModal"> 
         <Modal show={this.state.modalIsOpen} onHide={this.hideModal}>
           <Modal.Header closeButton>
@@ -456,19 +603,18 @@ class App extends React.Component {
           <Modal.Body>
             <div className="modalBody">
               <div id="bName">Name: {this.state.selectedBusiness}</div>
-              <div id = "biName">BusinessID: {this.businessid}</div>
-              <div id="zcName" > Address: </div>
-              <div id="cName">Open/Close Times:</div>
-              <div id="sName">Categories:</div>
-              <div> Distance to User: </div>
-              
-              
+              <div id = "biName">BusinessID: {this.state.selectedBusinessID} </div>
+              <div id="zcName" > Address: {this.state.selectedAddress} </div>
+              <div> Stars: {this.state.selectedStars}</div>
+              <div> Num Checking: {this.state.selectedNumCheckins}</div>
+              <div> Review Rating: {this.state.selectedReviewRating}</div>
+              <br></br>
               <div id="cCount">Businesses in City: {this.state.cCount}</div>
               <div id="sCount">Businesses in State: {this.state.sCount}</div>
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={this.hideModal}>
+            <Button variant="secondary" onClick={this.hidemodal}>
               Close
             </Button>
             <Button variant= "primary" onClick={this.state.saveBusiness}>

@@ -39,8 +39,20 @@
 }
 
 .Table {
-  width: 1000px;
+  width: 1100px;
   margin-left: 70px;
+  border-radius: 12px;
+  padding: 14px;
+  /*text-align: center;*/
+  /* background-color: burlywood; */
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  float:left;
+}
+
+.TableInfo {
+  width: 400px;
+  margin-top: 20px;
+  margin-left: 20px;
   border-radius: 12px;
   padding: 14px;
   /*text-align: center;*/
